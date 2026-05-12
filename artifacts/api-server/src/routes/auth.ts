@@ -145,7 +145,7 @@ router.post("/auth/usuarios", requireAdmin, async (req, res): Promise<void> => {
 });
 
 router.delete("/auth/usuarios/:id", requireAdmin, async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params["id"] as string, 10);
   if (isNaN(id)) {
     res.status(400).json({ error: "ID inválido" });
     return;

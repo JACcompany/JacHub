@@ -724,6 +724,8 @@ components:
           type: ["integer", "null"]
         asignadoA:
           type: ["string", "null"]
+        creadoPor:
+          type: ["string", "null"]
         etiquetas:
           type: array
           items:
@@ -748,6 +750,8 @@ components:
         proyectoId:
           type: integer
         asignadoA:
+          type: string
+        creadoPor:
           type: string
         etiquetas:
           type: array

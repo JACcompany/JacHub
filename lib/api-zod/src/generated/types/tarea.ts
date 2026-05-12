@@ -17,6 +17,8 @@ export interface Tarea {
   proyectoId?: number | null;
   /** @nullable */
   asignadoA?: string | null;
+  /** @nullable */
+  creadoPor?: string | null;
   etiquetas?: string[];
   fechaCreacion: string;
   /** @nullable */

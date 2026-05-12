@@ -1,8 +1,18 @@
 import { useGetMe } from "@workspace/api-client-react";
 
-const ADMIN_EMAIL = "gael@jac.dev";
+export const OWNER_EMAIL = "gael@jac.dev";
 
 export function useIsAdmin(): boolean {
   const { data: user } = useGetMe();
-  return user?.email === ADMIN_EMAIL;
+  return user?.email === OWNER_EMAIL;
+}
+
+export function useIsOwner(): boolean {
+  const { data: user } = useGetMe();
+  return user?.email === OWNER_EMAIL;
+}
+
+export function useCurrentUser() {
+  const { data: user } = useGetMe();
+  return user ?? null;
 }

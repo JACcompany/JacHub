@@ -194,6 +194,7 @@ export const ListTareasResponseItem = zod.object({
   prioridad: zod.string(),
   proyectoId: zod.number().nullish(),
   asignadoA: zod.string().nullish(),
+  creadoPor: zod.string().nullish(),
   etiquetas: zod.array(zod.string()).optional(),
   fechaCreacion: zod.string(),
   fechaLimite: zod.string().nullish(),
@@ -210,6 +211,7 @@ export const CreateTareaBody = zod.object({
   prioridad: zod.string().optional(),
   proyectoId: zod.number().optional(),
   asignadoA: zod.string().optional(),
+  creadoPor: zod.string().optional(),
   etiquetas: zod.array(zod.string()).optional(),
   fechaLimite: zod.string().optional(),
 });
@@ -239,6 +241,7 @@ export const UpdateTareaResponse = zod.object({
   prioridad: zod.string(),
   proyectoId: zod.number().nullish(),
   asignadoA: zod.string().nullish(),
+  creadoPor: zod.string().nullish(),
   etiquetas: zod.array(zod.string()).optional(),
   fechaCreacion: zod.string(),
   fechaLimite: zod.string().nullish(),

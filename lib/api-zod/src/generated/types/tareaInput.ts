@@ -13,6 +13,7 @@ export interface TareaInput {
   prioridad?: string;
   proyectoId?: number;
   asignadoA?: string;
+  creadoPor?: string;
   etiquetas?: string[];
   fechaLimite?: string;
 }

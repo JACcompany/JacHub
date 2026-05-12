@@ -10,7 +10,9 @@ import {
   ListTareasResponse,
   UpdateTareaResponse,
 } from "@workspace/api-zod";
-import { requireAuth, requireAdmin } from "../middleware/adminAuth";
+import { requireAuth } from "../middleware/adminAuth";
+
+const OWNER_EMAIL = "gael@jac.dev";
 
 const router: IRouter = Router();
 
@@ -35,15 +37,17 @@ router.get("/tareas", requireAuth, async (req, res): Promise<void> => {
   }))));
 });
 
-router.post("/tareas", requireAdmin, async (req, res): Promise<void> => {
+router.post("/tareas", requireAuth, async (req, res): Promise<void> => {
   const parsed = CreateTareaBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { fechaLimite, ...rest } = parsed.data;
+  const usuario = (req as any).usuario;
+  const { fechaLimite, creadoPor: _ignore, ...rest } = parsed.data;
   const [tarea] = await db.insert(tareasTable).values({
     ...rest,
+    creadoPor: usuario.email,
     ...(fechaLimite ? { fechaLimite: new Date(fechaLimite) } : {}),
   }).returning();
   res.status(201).json({
@@ -53,7 +57,7 @@ router.post("/tareas", requireAdmin, async (req, res): Promise<void> => {
   });
 });
 
-router.patch("/tareas/:id", requireAdmin, async (req, res): Promise<void> => {
+router.patch("/tareas/:id", requireAuth, async (req, res): Promise<void> => {
   const params = UpdateTareaParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -81,20 +85,23 @@ router.patch("/tareas/:id", requireAdmin, async (req, res): Promise<void> => {
   }));
 });
 
-router.delete("/tareas/:id", requireAdmin, async (req, res): Promise<void> => {
+router.delete("/tareas/:id", requireAuth, async (req, res): Promise<void> => {
   const params = DeleteTareaParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
     return;
   }
-  const [tarea] = await db
-    .delete(tareasTable)
-    .where(eq(tareasTable.id, params.data.id))
-    .returning();
-  if (!tarea) {
+  const usuario = (req as any).usuario;
+  const [existingTarea] = await db.select().from(tareasTable).where(eq(tareasTable.id, params.data.id));
+  if (!existingTarea) {
     res.status(404).json({ error: "Tarea no encontrada" });
     return;
   }
+  if (existingTarea.creadoPor !== usuario.email && usuario.email !== OWNER_EMAIL) {
+    res.status(403).json({ error: "Solo puedes eliminar tus propias tareas." });
+    return;
+  }
+  await db.delete(tareasTable).where(eq(tareasTable.id, params.data.id));
   res.sendStatus(204);
 });
 

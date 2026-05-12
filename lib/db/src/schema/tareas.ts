@@ -10,6 +10,7 @@ export const tareasTable = pgTable("tareas", {
   prioridad: text("prioridad").notNull().default("Media"),
   proyectoId: integer("proyecto_id"),
   asignadoA: text("asignado_a"),
+  creadoPor: text("creado_por"),
   etiquetas: text("etiquetas").array().notNull().default([]),
   fechaCreacion: timestamp("fecha_creacion", { withTimezone: true }).notNull().defaultNow(),
   fechaLimite: timestamp("fecha_limite", { withTimezone: true }),
