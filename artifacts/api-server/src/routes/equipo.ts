@@ -8,63 +8,54 @@ import {
   ListEquipoResponse,
   UpdateMiembroResponse,
 } from "@workspace/api-zod";
+import { requireAuth, requireAdmin } from "../middleware/adminAuth";
 
 const router: IRouter = Router();
 
-// Listar miembros del equipo
-router.get("/equipo", async (req, res): Promise<void> => {
+router.get("/equipo", requireAuth, async (req, res): Promise<void> => {
   const miembros = await db
     .select()
     .from(miembrosTable)
     .orderBy(miembrosTable.nombre);
-
   res.json(ListEquipoResponse.parse(miembros.map(m => ({
     ...m,
     fechaUnion: m.fechaUnion.toISOString(),
   }))));
 });
 
-// Agregar miembro
-router.post("/equipo", async (req, res): Promise<void> => {
+router.post("/equipo", requireAdmin, async (req, res): Promise<void> => {
   const parsed = CreateMiembroBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-
   const [miembro] = await db.insert(miembrosTable).values(parsed.data).returning();
-
   res.status(201).json({
     ...miembro,
     fechaUnion: miembro.fechaUnion.toISOString(),
   });
 });
 
-// Actualizar miembro
-router.patch("/equipo/:id", async (req, res): Promise<void> => {
+router.patch("/equipo/:id", requireAdmin, async (req, res): Promise<void> => {
   const params = UpdateMiembroParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
     return;
   }
-
   const parsed = UpdateMiembroBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-
   const [miembro] = await db
     .update(miembrosTable)
     .set(parsed.data)
     .where(eq(miembrosTable.id, params.data.id))
     .returning();
-
   if (!miembro) {
     res.status(404).json({ error: "Miembro no encontrado" });
     return;
   }
-
   res.json(UpdateMiembroResponse.parse({
     ...miembro,
     fechaUnion: miembro.fechaUnion.toISOString(),

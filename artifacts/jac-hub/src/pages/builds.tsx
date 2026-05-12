@@ -11,15 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Package, Download, Plus, GitCommit, HardDrive, Calendar } from "lucide-react";
+import { Loader2, Package, Download, Plus, GitCommit, HardDrive, Calendar, Lock } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useIsAdmin } from "@/hooks/use-admin";
 
 export default function Builds() {
   const { data: builds, isLoading } = useListBuilds({});
   const createMutation = useCreateBuild();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const isAdmin = useIsAdmin();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [nuevoBuild, setNuevoBuild] = useState({ version: "", plataforma: "Windows", descripcion: "", tamano: "", changelog: "" });
@@ -54,62 +56,72 @@ export default function Builds() {
             <h1 className="text-3xl font-bold tracking-tight text-primary uppercase">Repositorio de Builds</h1>
             <p className="text-muted-foreground">Distribuciones compiladas y versiones del producto.</p>
           </div>
-          
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 shadow-[0_0_10px_rgba(0,255,136,0.2)]">
-                <Plus className="h-4 w-4" /> Subir Build
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] border-primary/20 bg-card">
-              <form onSubmit={handleCreate}>
-                <DialogHeader>
-                  <DialogTitle>Registrar Nueva Compilación</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="version">Versión (Ej: v1.2.0)</Label>
-                      <Input id="version" value={nuevoBuild.version} onChange={e => setNuevoBuild({...nuevoBuild, version: e.target.value})} required />
+
+          {isAdmin && (
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 shadow-[0_0_10px_rgba(0,255,136,0.2)]">
+                  <Plus className="h-4 w-4" /> Subir Build
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] border-primary/20 bg-card">
+                <form onSubmit={handleCreate}>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Nueva Compilación</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label>Versión (Ej: v1.2.0)</Label>
+                        <Input value={nuevoBuild.version} onChange={e => setNuevoBuild({...nuevoBuild, version: e.target.value})} required />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label>Plataforma</Label>
+                        <Select value={nuevoBuild.plataforma} onValueChange={v => setNuevoBuild({...nuevoBuild, plataforma: v})}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Windows">Windows</SelectItem>
+                            <SelectItem value="macOS">macOS</SelectItem>
+                            <SelectItem value="Linux">Linux</SelectItem>
+                            <SelectItem value="Android">Android (APK)</SelectItem>
+                            <SelectItem value="Consola">Consola</SelectItem>
+                            <SelectItem value="Multiplataforma">Multiplataforma</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="plataforma">Plataforma</Label>
-                      <Select value={nuevoBuild.plataforma} onValueChange={v => setNuevoBuild({...nuevoBuild, plataforma: v})}>
-                        <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Windows">Windows</SelectItem>
-                          <SelectItem value="macOS">macOS</SelectItem>
-                          <SelectItem value="Linux">Linux</SelectItem>
-                          <SelectItem value="Consola">Consola</SelectItem>
-                          <SelectItem value="Multiplataforma">Multiplataforma</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>Tamaño (Ej: 1.2 GB)</Label>
+                      <Input value={nuevoBuild.tamano} onChange={e => setNuevoBuild({...nuevoBuild, tamano: e.target.value})} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Descripción Breve</Label>
+                      <Input value={nuevoBuild.descripcion} onChange={e => setNuevoBuild({...nuevoBuild, descripcion: e.target.value})} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Changelog (Opcional)</Label>
+                      <Textarea value={nuevoBuild.changelog} onChange={e => setNuevoBuild({...nuevoBuild, changelog: e.target.value})} rows={4} className="font-mono text-xs" />
                     </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="tamano">Tamaño (Ej: 1.2 GB)</Label>
-                    <Input id="tamano" value={nuevoBuild.tamano} onChange={e => setNuevoBuild({...nuevoBuild, tamano: e.target.value})} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="descripcion">Descripción Breve</Label>
-                    <Input id="descripcion" value={nuevoBuild.descripcion} onChange={e => setNuevoBuild({...nuevoBuild, descripcion: e.target.value})} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="changelog">Changelog (Opcional)</Label>
-                    <Textarea id="changelog" value={nuevoBuild.changelog} onChange={e => setNuevoBuild({...nuevoBuild, changelog: e.target.value})} rows={4} className="font-mono text-xs" />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirmar Subida
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
+                    <Button type="submit" disabled={createMutation.isPending}>
+                      {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Confirmar Subida
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
+
+        {!isAdmin && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground border border-border/30 rounded-md px-3 py-2 bg-card/30">
+            <Lock className="h-3.5 w-3.5" />
+            <span>Modo lectura — solo el administrador puede subir o gestionar builds.</span>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -176,8 +188,15 @@ export default function Builds() {
         ) : (
           <div className="text-center py-20 border border-dashed border-border rounded-lg bg-card/20">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-medium text-foreground">Directorio Vacío</h3>
-            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">No hay compilaciones registradas en el sistema.</p>
+            <h3 className="text-lg font-medium text-foreground">No hay builds registradas</h3>
+            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
+              {isAdmin ? "Sube la primera compilación para comenzar el repositorio." : "El administrador aún no ha subido builds."}
+            </p>
+            {isAdmin && (
+              <Button className="mt-4" onClick={() => setIsCreateOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Subir Build
+              </Button>
+            )}
           </div>
         )}
       </div>

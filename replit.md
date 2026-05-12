@@ -27,21 +27,32 @@ Panel de gestión para estudio indie de videojuegos — todo en español latinoa
 - `lib/api-spec/openapi.yaml` — spec OpenAPI (fuente de verdad del contrato API)
 - `lib/db/src/schema/` — tablas Drizzle: usuarios, miembros, proyectos, tareas, bugs, builds, notificaciones, actividad
 - `artifacts/api-server/src/routes/` — auth, proyectos, tareas, bugs, equipo, builds, notificaciones, dashboard
+- `artifacts/api-server/src/middleware/adminAuth.ts` — middlewares `requireAuth` y `requireAdmin`
 - `artifacts/jac-hub/src/pages/` — login, dashboard, proyectos, proyecto-detalle, tareas, bugs, equipo, builds, notificaciones, configuracion
 - `artifacts/jac-hub/src/components/layout/AppLayout.tsx` — sidebar + topbar compartidos
+- `artifacts/jac-hub/src/hooks/use-admin.ts` — hook `useIsAdmin()` para verificar permisos en frontend
 - `artifacts/jac-hub/src/index.css` — paleta cyberpunk (fondo oscuro, neón verde/azul)
+
+## Security & Permissions
+
+- **Solo `gael@jac.dev` tiene acceso de administrador completo**
+- El middleware `requireAdmin` verifica el email del usuario en cookie antes de cualquier operación de escritura
+- El middleware `requireAuth` protege todas las rutas de lectura
+- El frontend usa `useIsAdmin()` para ocultar botones de acción según el rol
+- Todos los usuarios no-admin ven el sistema en **modo lectura** con indicadores de acceso restringido
+- `gael@jac.dev` puede crear/eliminar cuentas desde Configuración → "Gestión de Cuentas"
 
 ## Architecture decisions
 
 - Auth por cookie `session_usuario_id` (sin JWT, sin bcrypt — simple para demo)
-- Credenciales demo: `gael@jac.dev` / `jac2024` o `admin@jac.dev` / `admin123`
-- Dashboard stats calculadas en tiempo real (agregaciones SQL en cada request)
-- Actividad semanal del dashboard es generada con valores aleatorios por request (no persistida)
-- Drag-and-drop en Kanban implementado con eventos mouse nativos (sin librería externa)
+- Credencial admin: `gael@jac.dev` / `jac2024`
+- Dashboard stats calculadas en tiempo real (agregaciones SQL en cada request) — sin datos falsos
+- Base de datos iniciada limpia (sin datos de demo)
+- Actividad aleatoria/fake eliminada completamente del sistema
 
 ## Product
 
-JAC Hub es el panel de control del estudio JAC — gestiona proyectos de videojuegos (CodeQuest, PixelWars, NeonRunner), tareas en tablero Kanban, seguimiento de bugs, miembros del equipo, builds con changelogs, y notificaciones en tiempo real. Interfaz completamente en español latinoamericano con estética cyberpunk.
+JAC Hub es el panel de control del estudio JAC — gestiona proyectos de videojuegos, tareas en tablero Kanban, seguimiento de bugs, miembros del equipo, builds con changelogs, y notificaciones. Solo el administrador principal puede crear y modificar datos.
 
 ## User preferences
 
@@ -54,6 +65,7 @@ JAC Hub es el panel de control del estudio JAC — gestiona proyectos de videoju
 - Las fechas timestamp se convierten a `.toISOString()` antes de pasar por Zod (Drizzle retorna objetos Date, OpenAPI espera strings)
 - `fechaLimite` y `fechaResolucion` se convierten a `new Date()` antes de insertar en Drizzle
 - Correr `pnpm run typecheck:libs` después de agregar schemas nuevos al DB para rebuild
+- La constante `ADMIN_EMAIL = "gael@jac.dev"` está definida tanto en `adminAuth.ts` (backend) como en `use-admin.ts` (frontend)
 
 ## Pointers
 

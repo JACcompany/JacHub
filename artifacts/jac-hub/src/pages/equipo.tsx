@@ -11,10 +11,11 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useListEquipo, useCreateMiembro, useUpdateMiembro, getListEquipoQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, Mail, Clock, Code, Target, Bug, Palette, Plus, Edit2 } from "lucide-react";
+import { Loader2, Mail, Code, Target, Bug, Palette, Plus, Edit2, Users, Lock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { useIsAdmin } from "@/hooks/use-admin";
 
 export default function Equipo() {
   const { data: miembros, isLoading } = useListEquipo();
@@ -22,37 +23,34 @@ export default function Equipo() {
   const updateMutation = useUpdateMiembro();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const isAdmin = useIsAdmin();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [nuevoMiembro, setNuevoMiembro] = useState({ nombre: "", email: "", rol: "Programador", habilidadesStr: "" });
-
   const [editMiembroId, setEditMiembroId] = useState<number | null>(null);
   const [editData, setEditData] = useState({ enLinea: false, rol: "" });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate({ 
+    createMutation.mutate({
       data: {
         nombre: nuevoMiembro.nombre,
         email: nuevoMiembro.email,
         rol: nuevoMiembro.rol,
         habilidades: nuevoMiembro.habilidadesStr.split(',').map(h => h.trim()).filter(Boolean)
-      } 
+      }
     }, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListEquipoQueryKey() });
         setIsCreateOpen(false);
         setNuevoMiembro({ nombre: "", email: "", rol: "Programador", habilidadesStr: "" });
-        toast({ title: "Operador registrado" });
+        toast({ title: "Miembro registrado" });
       }
     });
   };
 
   const handleUpdate = (id: number) => {
-    updateMutation.mutate({
-      id,
-      data: editData
-    }, {
+    updateMutation.mutate({ id, data: editData }, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListEquipoQueryKey() });
         setEditMiembroId(null);
@@ -79,54 +77,63 @@ export default function Equipo() {
             <p className="text-muted-foreground">Personal autorizado en la terminal.</p>
           </div>
 
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 shadow-[0_0_10px_rgba(0,255,136,0.2)]">
-                <Plus className="h-4 w-4" /> Registrar Miembro
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] border-primary/20 bg-card">
-              <form onSubmit={handleCreate}>
-                <DialogHeader>
-                  <DialogTitle>Registrar Nuevo Operador</DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="nombre">Nombre</Label>
-                    <Input id="nombre" value={nuevoMiembro.nombre} onChange={e => setNuevoMiembro({...nuevoMiembro, nombre: e.target.value})} required />
+          {isAdmin && (
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2 shadow-[0_0_10px_rgba(0,255,136,0.2)]">
+                  <Plus className="h-4 w-4" /> Registrar Miembro
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px] border-primary/20 bg-card">
+                <form onSubmit={handleCreate}>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Nuevo Operador</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label>Nombre</Label>
+                      <Input value={nuevoMiembro.nombre} onChange={e => setNuevoMiembro({...nuevoMiembro, nombre: e.target.value})} required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Email</Label>
+                      <Input type="email" value={nuevoMiembro.email} onChange={e => setNuevoMiembro({...nuevoMiembro, email: e.target.value})} required />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Rol</Label>
+                      <Select value={nuevoMiembro.rol} onValueChange={v => setNuevoMiembro({...nuevoMiembro, rol: v})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Programador">Programador</SelectItem>
+                          <SelectItem value="Diseñador de juego">Diseñador de juego</SelectItem>
+                          <SelectItem value="Pixel Artist">Pixel Artist</SelectItem>
+                          <SelectItem value="Tester">Tester</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label>Habilidades (separadas por coma)</Label>
+                      <Input value={nuevoMiembro.habilidadesStr} onChange={e => setNuevoMiembro({...nuevoMiembro, habilidadesStr: e.target.value})} placeholder="React, C#, Unity..." />
+                    </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={nuevoMiembro.email} onChange={e => setNuevoMiembro({...nuevoMiembro, email: e.target.value})} required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="rol">Rol</Label>
-                    <Select value={nuevoMiembro.rol} onValueChange={v => setNuevoMiembro({...nuevoMiembro, rol: v})}>
-                      <SelectTrigger><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Programador">Programador</SelectItem>
-                        <SelectItem value="Diseñador de juego">Diseñador de juego</SelectItem>
-                        <SelectItem value="Pixel Artist">Pixel Artist</SelectItem>
-                        <SelectItem value="Tester">Tester</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="habilidades">Habilidades (separadas por coma)</Label>
-                    <Input id="habilidades" value={nuevoMiembro.habilidadesStr} onChange={e => setNuevoMiembro({...nuevoMiembro, habilidadesStr: e.target.value})} placeholder="React, C#, Unity..." />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Registrar
-                  </Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
+                    <Button type="submit" disabled={createMutation.isPending}>
+                      {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Registrar
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
+
+        {!isAdmin && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground border border-border/30 rounded-md px-3 py-2 bg-card/30">
+            <Lock className="h-3.5 w-3.5" />
+            <span>Modo lectura — solo el administrador puede agregar o editar miembros del equipo.</span>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center py-12">
@@ -161,57 +168,55 @@ export default function Equipo() {
                         </div>
                       </div>
                     </div>
-                    <Dialog 
-                      open={editMiembroId === miembro.id} 
-                      onOpenChange={(open) => {
-                        if(open) {
-                          setEditMiembroId(miembro.id);
-                          setEditData({ enLinea: miembro.enLinea, rol: miembro.rol });
-                        } else {
-                          setEditMiembroId(null);
-                        }
-                      }}
-                    >
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 -mt-2 -mr-2 opacity-50 hover:opacity-100 text-muted-foreground hover:text-primary">
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[400px] border-primary/20 bg-card">
-                        <DialogHeader>
-                          <DialogTitle>Editar {miembro.nombre}</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="flex items-center justify-between">
-                            <Label>Estado de Conexión (En línea)</Label>
-                            <Switch 
-                              checked={editData.enLinea} 
-                              onCheckedChange={v => setEditData({...editData, enLinea: v})} 
-                              className="data-[state=checked]:bg-primary"
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label>Rol</Label>
-                            <Select value={editData.rol} onValueChange={v => setEditData({...editData, rol: v})}>
-                              <SelectTrigger><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Programador">Programador</SelectItem>
-                                <SelectItem value="Diseñador de juego">Diseñador de juego</SelectItem>
-                                <SelectItem value="Pixel Artist">Pixel Artist</SelectItem>
-                                <SelectItem value="Tester">Tester</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setEditMiembroId(null)}>Cancelar</Button>
-                          <Button onClick={() => handleUpdate(miembro.id)} disabled={updateMutation.isPending}>
-                            {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Actualizar
+                    {isAdmin && (
+                      <Dialog
+                        open={editMiembroId === miembro.id}
+                        onOpenChange={(open) => {
+                          if (open) {
+                            setEditMiembroId(miembro.id);
+                            setEditData({ enLinea: miembro.enLinea, rol: miembro.rol });
+                          } else {
+                            setEditMiembroId(null);
+                          }
+                        }}
+                      >
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 -mt-2 -mr-2 opacity-50 hover:opacity-100 text-muted-foreground hover:text-primary">
+                            <Edit2 className="h-4 w-4" />
                           </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[400px] border-primary/20 bg-card">
+                          <DialogHeader>
+                            <DialogTitle>Editar {miembro.nombre}</DialogTitle>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="flex items-center justify-between">
+                              <Label>Estado de Conexión (En línea)</Label>
+                              <Switch checked={editData.enLinea} onCheckedChange={v => setEditData({...editData, enLinea: v})} className="data-[state=checked]:bg-primary" />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label>Rol</Label>
+                              <Select value={editData.rol} onValueChange={v => setEditData({...editData, rol: v})}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Programador">Programador</SelectItem>
+                                  <SelectItem value="Diseñador de juego">Diseñador de juego</SelectItem>
+                                  <SelectItem value="Pixel Artist">Pixel Artist</SelectItem>
+                                  <SelectItem value="Tester">Tester</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setEditMiembroId(null)}>Cancelar</Button>
+                            <Button onClick={() => handleUpdate(miembro.id)} disabled={updateMutation.isPending}>
+                              {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                              Actualizar
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -220,7 +225,6 @@ export default function Equipo() {
                       <Mail className="h-4 w-4" />
                       <span className="truncate">{miembro.email}</span>
                     </div>
-                    
                     <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">Proyectos</p>
@@ -231,15 +235,12 @@ export default function Equipo() {
                         <p className="font-mono text-xs">{formatDistanceToNow(new Date(miembro.fechaUnion), { locale: es })}</p>
                       </div>
                     </div>
-
                     {miembro.habilidades && miembro.habilidades.length > 0 && (
                       <div className="pt-2 border-t border-border">
                         <p className="text-xs text-muted-foreground mb-2">Habilidades Técnicas</p>
                         <div className="flex flex-wrap gap-1.5">
                           {miembro.habilidades.map((hab, i) => (
-                            <Badge key={i} variant="outline" className="text-[10px] font-mono border-primary/30 text-primary/80">
-                              {hab}
-                            </Badge>
+                            <Badge key={i} variant="outline" className="text-[10px] font-mono border-primary/30 text-primary/80">{hab}</Badge>
                           ))}
                         </div>
                       </div>
@@ -251,8 +252,16 @@ export default function Equipo() {
           </div>
         ) : (
           <div className="text-center py-20 border border-dashed border-border rounded-lg bg-card/20">
-            <h3 className="text-lg font-medium text-foreground">Sin Registros</h3>
-            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">No se encontraron miembros del equipo en la base de datos.</p>
+            <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground">No hay miembros registrados</h3>
+            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
+              {isAdmin ? "Agrega miembros del equipo para comenzar." : "El administrador aún no ha registrado miembros del equipo."}
+            </p>
+            {isAdmin && (
+              <Button className="mt-4" onClick={() => setIsCreateOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Registrar Miembro
+              </Button>
+            )}
           </div>
         )}
       </div>
