@@ -1,0 +1,192 @@
+ADD AN ADVANCED AI STORYBOARD GENERATION SYSTEM + REAL-TIME TEAM CHAT SYSTEM.
+
+IMPORTANT:
+Everything must remain entirely in Spanish.
+
+==================================================
+🎨 AI STORYBOARD GENERATION SYSTEM
+==================================
+
+Create a new module called:
+
+* “IA Creativa”
+* “Generador de Storyboards”
+
+This system should use AI APIs to automatically generate storyboard concepts and planning visuals for game development projects like CodeQuest.
+
+FEATURES:
+
+1. AI STORYBOARD GENERATOR
+   Allow users to enter:
+
+* Nombre de escena
+* Descripción
+* Mecánica
+* Ambiente
+* Tipo de escena
+* Personajes
+* Objetivo
+
+The AI should generate:
+
+* Concepto visual
+* Storyboard textual
+* Planeación de escena
+* Ideas de gameplay
+* Descripción narrativa
+* Objetivos
+* UI sugerida
+
+2. AI IMAGE GENERATION
+   Integrate an image generation API.
+
+Suggested compatible providers:
+
+* OpenAI Images API
+* Stability AI
+* Leonardo AI
+* Replicate
+
+The system should generate:
+
+* Pixel art concepts
+* Storyboard frames
+* Retro RPG scenes
+* UI mockups
+* Enemy concepts
+* Cyberpunk environments
+
+3. GENERATED CONTENT UI
+   Display:
+
+* Generated images
+* Storyboard cards
+* Weekly planning cards
+* Scene descriptions
+* Gameplay suggestions
+
+4. STORYBOARD EXPORT
+   Allow exporting:
+
+* PNG
+* PDF
+* Markdown
+
+5. STYLE
+   Generated visuals should follow:
+
+* Pixel art
+* Retro RPG
+* Cyberpunk
+* Neon dark aesthetic
+
+==================================================
+💬 REAL-TIME TEAM CHAT SYSTEM
+=============================
+
+Create a complete real-time communication system inspired by Discord.
+
+MODULE NAME:
+
+* “Comunidad JAC”
+* “Chat del Equipo”
+
+FEATURES:
+
+1. GENERAL CHAT
+   Create:
+
+* Canal General
+* Canal Desarrollo
+* Canal Arte
+* Canal Testing
+* Canal Ideas
+
+2. REAL-TIME MESSAGING
+   Use:
+
+* WebSockets
+* Socket.IO
+* Supabase realtime
+
+Messages should appear instantly.
+
+3. VOICE CHAT SYSTEM
+   Add a real-time voice channel system.
+
+Features:
+
+* “Canal de Voz General”
+* Join/leave voice calls
+* Show connected users
+* Voice status indicators
+* Mute/unmute
+* Simple modern UI
+
+Suggested technologies:
+
+* WebRTC
+* LiveKit
+* Agora
+* Socket.IO signaling
+
+4. MESSAGE FEATURES
+   Allow:
+
+* Emojis
+* Mentions
+* Replies
+* Timestamps
+* User avatars
+* Typing indicator
+* Online/offline status
+
+5. OWNER SPECIAL STYLE
+   Messages from:
+
+* gaelo03
+
+must display:
+
+* 👑 Crown icon
+* OWNER badge
+* Strong neon glow
+* Special message styling
+
+6. RESPONSIVE DESIGN
+   The chat system must work perfectly on:
+
+* Mobile
+* PC
+* APK version
+
+7. UI STYLE
+   Keep:
+
+* Cyberpunk style
+* Discord-inspired layout
+* Pixel-art inspired icons
+* Neon animations
+* Dark futuristic design
+
+==================================================
+🔒 SECURITY
+===========
+
+* Only authenticated users can access chats
+* Protect voice channels
+* Secure websocket connections
+* Role-based permissions
+
+==================================================
+IMPORTANT
+=========
+
+This system should feel like a real indie game studio collaboration platform combining:
+
+* Discord
+* Trello
+* AI storyboard generation
+* Game development planning
+* Team communication
+* Retro cyberpunk aesthetics
