@@ -1,0 +1,140 @@
+Create a modern web dashboard called **JAC Hub** for a small indie game development company.
+
+IMPORTANT:
+
+* EVERYTHING must be entirely in SPANISH.
+* All UI text, buttons, labels, notifications, pages, placeholders, comments, and demo data must be written in Spanish.
+* Use natural Latin American Spanish.
+* The interface should feel professional and polished.
+
+STYLE:
+
+* Dark futuristic UI
+* Neon green + blue accents
+* Clean cyberpunk aesthetic
+* Responsive design
+* Smooth animations
+* Professional startup-style interface
+
+TECH STACK:
+
+* Next.js
+* React
+* Tailwind CSS
+* Node.js backend
+* Supabase database/auth
+* Use mock/demo data if needed
+
+FEATURES:
+
+1. LOGIN SYSTEM
+
+* Authentication page
+* Email/usuario + contraseña
+* JAC logo
+* Remember session
+* All text in Spanish
+
+2. MAIN DASHBOARD
+
+* Sidebar navigation
+* Top navbar with profile and notifications
+* Cards showing:
+
+  * Proyectos activos
+  * Miembros conectados
+  * Bugs abiertos
+  * Tareas completadas esta semana
+  * Últimas builds
+
+3. PROJECTS PAGE
+
+* Grid/list of projects
+* Each project contains:
+
+  * Nombre
+  * Estado
+  * Progreso %
+  * Miembros del equipo
+  * Última actualización
+* Include demo project:
+
+  * CodeQuest
+
+4. TASK SYSTEM
+
+* Kanban board style
+* Columns:
+
+  * Ideas
+  * Pendiente
+  * En progreso
+  * Testing
+  * Completado
+* Drag-and-drop UI
+
+5. BUG TRACKER
+
+* Lista de bugs reportados
+* Prioridad
+* Estado
+* Desarrollador asignado
+* Sistema de búsqueda y filtros
+
+6. TEAM PAGE
+
+* Cards de miembros
+* Roles:
+
+  * Programador
+  * Pixel Artist
+  * Diseñador de juego
+  * Tester
+* Indicador online/offline
+
+7. BUILDS PAGE
+
+* Lista de builds del juego
+* Botones de descarga
+* Número de versión
+* Fecha de subida
+* Modal de changelog
+
+8. NOTIFICATIONS SYSTEM
+
+* Notifications styled in real time
+* Examples:
+
+  * “Gael actualizó CodeQuest”
+  * “Nueva build subida”
+  * “Bug crítico corregido”
+
+9. SETTINGS PAGE
+
+* Configuración de tema
+* Configuración de perfil
+* Preferencias del proyecto
+
+10. EXTRA DETAILS
+
+* Add realistic fake/mock data
+* Add futuristic charts and stats
+* Add loading animations
+* Add hover effects
+* Add pixel/cyber inspired icons
+* Use clean reusable React components
+* Use best practices
+* Include comments in Spanish in important code sections
+* Make the dashboard feel like a real indie studio management platform
+
+IMPORTANT:
+
+* Generate the FULL project structure
+* Include all pages/components
+* Include backend structure
+* Include modern and polished UI
+* Everything should work immediately after install
+* Use reusable React components
+* Make the project visually impressive
+* Add transitions and subtle animations
+* Ensure mobile responsiveness
