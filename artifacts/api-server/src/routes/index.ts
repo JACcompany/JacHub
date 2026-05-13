@@ -8,6 +8,7 @@ import equipoRouter from "./equipo";
 import buildsRouter from "./builds";
 import notificacionesRouter from "./notificaciones";
 import dashboardRouter from "./dashboard";
+import chatRouter from "./chat";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(equipoRouter);
 router.use(buildsRouter);
 router.use(notificacionesRouter);
 router.use(dashboardRouter);
+router.use(chatRouter);
 
 export default router;

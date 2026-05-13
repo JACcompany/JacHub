@@ -13,6 +13,9 @@ import Builds from "@/pages/builds";
 import Notificaciones from "@/pages/notificaciones";
 import Configuracion from "@/pages/configuracion";
 import Tareas from "@/pages/tareas";
+import Chat from "@/pages/chat";
+import Planning from "@/pages/planning";
+import Storyboard from "@/pages/storyboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,9 +37,12 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/proyectos" component={Proyectos} />
       <Route path="/tareas" component={Tareas} />
+      <Route path="/chat" component={Chat} />
+      <Route path="/planning" component={Planning} />
       <Route path="/bugs" component={Bugs} />
       <Route path="/equipo" component={Equipo} />
       <Route path="/builds" component={Builds} />
+      <Route path="/storyboard" component={Storyboard} />
       <Route path="/notificaciones" component={Notificaciones} />
       <Route path="/configuracion" component={Configuracion} />
       <Route component={NotFound} />

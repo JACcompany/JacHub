@@ -6,3 +6,4 @@ export * from "./bugs";
 export * from "./builds";
 export * from "./notificaciones";
 export * from "./actividad";
+export * from "./mensajes_chat";
