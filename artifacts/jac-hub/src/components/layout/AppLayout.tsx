@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Badge } from "@/components/ui/badge";
 import { OwnerBadge } from "@/components/OwnerBadge";
 import { OWNER_EMAIL } from "@/hooks/use-admin";
+import { useDesktopNotifications } from "@/hooks/use-desktop-notifications";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
@@ -23,6 +24,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   const unreadCount = notificaciones?.filter(n => !n.leida).length || 0;
   const isOwner = user?.email === OWNER_EMAIL;
+
+  // Fire native OS popups when running inside the Electron desktop app
+  useDesktopNotifications();
 
   useEffect(() => {
     if (!isUserLoading && !user) {

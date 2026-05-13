@@ -42,6 +42,14 @@ export default function Chat() {
   const wsRef = useRef<WebSocket | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Keep current user email accessible inside WS callbacks without stale closure
+  const userEmailRef = useRef<string | undefined>(undefined);
+  // Throttle chat notifications: max one popup per 5 s
+  const lastNotifRef = useRef<number>(0);
+
+  useEffect(() => {
+    userEmailRef.current = user?.email;
+  }, [user?.email]);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -96,6 +104,23 @@ export default function Chat() {
         const data: Mensaje = JSON.parse(event.data);
         setMensajes(prev => [...prev.slice(-200), data]);
         scrollToBottom();
+
+        // Native desktop notification (Electron only)
+        if (
+          data.tipo === "mensaje" &&
+          data.autorEmail !== userEmailRef.current &&
+          !document.hasFocus() &&
+          window.electronAPI
+        ) {
+          const now = Date.now();
+          if (now - lastNotifRef.current > 5_000) {
+            lastNotifRef.current = now;
+            window.electronAPI.notify(
+              `#${sala} — ${data.autorNombre ?? "Equipo"}`,
+              data.contenido ?? "",
+            );
+          }
+        }
       } catch { /* ignore */ }
     };
   }, [scrollToBottom]);
