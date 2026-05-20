@@ -31,6 +31,12 @@ Proyecto monorepo para la app web JAC Hub.
 
 - URL: https://github.com/JACcompany/JacHub
 
+## Sitio en vivo
+
+- URL: https://jaccompany.github.io/JacHub/
+
+> El despliegue se hará automáticamente cada vez que empujes a `main`.
+
 ## Notas
 
 - Usa `pnpm` como gestor de paquetes.
