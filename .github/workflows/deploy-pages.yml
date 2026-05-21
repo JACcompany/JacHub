@@ -30,6 +30,15 @@ jobs:
           corepack prepare pnpm@latest --activate
           pnpm --version
 
+      - name: Debug pnpm environment
+        run: |
+          node -v
+          pnpm -v || true
+          echo "npm_config_user_agent=$npm_config_user_agent"
+          echo "--- listing workspace root ---"
+          ls -la
+          echo "--- .pnpm-preinstall.js content (if present) ---"
+          if [ -f .pnpm-preinstall.js ]; then cat .pnpm-preinstall.js; else echo 'no .pnpm-preinstall.js'; fi
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
